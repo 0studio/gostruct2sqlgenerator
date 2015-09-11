@@ -37,7 +37,7 @@ import (
 
 var ___importTime time.Time
 
-func (this Hello) GenerateInsert() (sql string) {
+func (this Hello) GetInsertSql() (sql string) {
     sql = fmt.Sprintf("insert into `Hello`(Id,helloName,Age,T,T2) values (%d,'%s',%d,%d,%s);",
         this.Id,
         this.Name,
@@ -47,18 +47,18 @@ func (this Hello) GenerateInsert() (sql string) {
     return
 }
 
-func (this Hello) GenerateCreate() (sql string) {
+func (this Hello) GetCreateTableSql() (sql string) {
     sql = "create table if not exists `Hello`(`Id` bigint NOT NULL DEFAULT 0,`helloName` varchar(10) NOT NULL DEFAULT '',`Age` int NOT NULL DEFAULT 0,`T` int NOT NULL DEFAULT 0,`T2` timestamp NOT NULL DEFAULT 0,primary key (Id,helloName));"
     return
 }
 
-func (this World) GenerateInsert() (sql string) {
+func (this World) GetInsertSql() (sql string) {
     sql = fmt.Sprintf("insert into `World`(Id) values (%d);",
         this.Id)
     return
 }
 
-func (this World) GenerateCreate() (sql string) {
+func (this World) GetCreateTableSql() (sql string) {
     sql = "create table if not exists `World`(`Id` int NOT NULL DEFAULT 0);"
     return
 }

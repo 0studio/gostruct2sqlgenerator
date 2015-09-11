@@ -149,7 +149,7 @@ func (sd StructDescription) GenerateCreateTableSql() (sql string, err error) {
 }
 
 func (sd StructDescription) GenerateCreateTableFunc() (goCode string) {
-	goCode += fmt.Sprintf("func (this %s) GenerateCreate() (sql string) {\n", sd.StructName)
+	goCode += fmt.Sprintf("func (this %s) GetCreateTableSql() (sql string) {\n", sd.StructName)
 	sql, _ := sd.GenerateCreateTableSql()
 	goCode += fmt.Sprintf("    sql = \"%s\"\n", sql)
 	goCode += "    return\n"
@@ -158,7 +158,7 @@ func (sd StructDescription) GenerateCreateTableFunc() (goCode string) {
 }
 
 func (sd StructDescription) GenerateInsert() (goCode string) {
-	goCode += fmt.Sprintf("func (this %s) GenerateInsert() (sql string) {\n", sd.StructName)
+	goCode += fmt.Sprintf("func (this %s) GetInsertSql() (sql string) {\n", sd.StructName)
 	goCode += fmt.Sprintf("    sql = fmt.Sprintf(\"insert into `%s`(", sd.GetMysqlTableName())
 	for idx, field := range sd.Fields {
 		if idx != len(sd.Fields)-1 {
