@@ -90,7 +90,7 @@ func (sd StructDescription) GenerateCreateTableSql() (sql string, err error) {
 	}
 	sql += "create table `" + sd.StructName + "`(\n"
 	for idx, fieldD := range sd.Fields {
-		sql += "`" + fieldD.GetMysqlFieldName() + "` NOT NULL DEFAULT" + fieldD.GetMysqlDefalutValue()
+		sql += "`" + fieldD.GetMysqlFieldName() + "` " + fieldD.GetMysqlType() + " NOT NULL DEFAULT " + fieldD.GetMysqlDefalutValue()
 		if idx != len(sd.Fields)-1 {
 			sql += ",\n"
 		} else {
@@ -102,6 +102,6 @@ func (sd StructDescription) GenerateCreateTableSql() (sql string, err error) {
 		sql += ",primary key (" + strings.Join(pkList, ",") + ")\n"
 	}
 
-	sql += ");\n"
+	sql += ");"
 	return
 }
