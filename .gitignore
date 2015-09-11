@@ -1,1 +1,4 @@
 *.test
+/gostruct2sqlgenerator
+/example/example_1_create_table.sql
+/example/example_1_sub.go
