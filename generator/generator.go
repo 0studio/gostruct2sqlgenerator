@@ -2,6 +2,7 @@ package generator
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -43,6 +44,37 @@ type FieldDescriptoin struct {
 	MysqlTagFieldList TagFieldList
 }
 
+func (fd FieldDescriptoin) IsInt() bool {
+	if fd.FieldGoType == "int" ||
+		fd.FieldGoType == "int8" ||
+		fd.FieldGoType == "int16" ||
+		fd.FieldGoType == "int32" ||
+		fd.FieldGoType == "int64" ||
+		fd.FieldGoType == "uint8" ||
+		fd.FieldGoType == "uint16" ||
+		fd.FieldGoType == "uint32" ||
+		fd.FieldGoType == "uint64" {
+		return true
+	}
+	return false
+}
+
+func (fd FieldDescriptoin) IsFloat() bool {
+	if fd.FieldGoType == "flaot32" ||
+		fd.FieldGoType == "flaot64" {
+		return true
+	}
+	return false
+}
+func (fd FieldDescriptoin) IsNumber() bool {
+	if fd.IsInt() {
+		return true
+	}
+	if fd.IsFloat() {
+		return true
+	}
+	return false
+}
 func (fd FieldDescriptoin) IsPK() bool {
 	return fd.MysqlTagFieldList.Contains("pk")
 }
@@ -74,6 +106,9 @@ type StructDescription struct {
 	Fields     []FieldDescriptoin
 }
 
+func (sd StructDescription) GetMysqlTableName() string {
+	return sd.StructName
+}
 func (sd StructDescription) GetPK() (pkList []string) {
 	for _, field := range sd.Fields {
 		if field.IsPK() {
@@ -88,7 +123,7 @@ func (sd StructDescription) GenerateCreateTableSql() (sql string, err error) {
 	if len(sd.Fields) == 0 {
 		return "", errors.New("no filed found ,generate create table sql error")
 	}
-	sql += "create table if not exists `" + sd.StructName + "`(\n"
+	sql += "create table if not exists `" + sd.GetMysqlTableName() + "`(\n"
 	for idx, fieldD := range sd.Fields {
 		sql += "`" + fieldD.GetMysqlFieldName() + "` " + fieldD.GetMysqlType() + " NOT NULL DEFAULT " + fieldD.GetMysqlDefalutValue()
 		if idx != len(sd.Fields)-1 {
@@ -103,5 +138,67 @@ func (sd StructDescription) GenerateCreateTableSql() (sql string, err error) {
 	}
 
 	sql += ");"
+	return
+}
+
+func (sd StructDescription) GenerateInsert() (goCode string) {
+	goCode += fmt.Sprintf("func (this %s) GenerateInsert() (sql string) {\n", sd.StructName)
+	goCode += fmt.Sprintf("    sql = fmt.Sprintf(\"insert into `%s`(", sd.GetMysqlTableName())
+	for idx, field := range sd.Fields {
+		if idx != len(sd.Fields)-1 {
+			goCode += field.GetMysqlFieldName() + ","
+		} else {
+			goCode += field.GetMysqlFieldName()
+		}
+	}
+	goCode += ") values ("
+	for idx, field := range sd.Fields {
+		if field.IsNumber() {
+			goCode += "%d"
+		}
+		if field.FieldGoType == "time.Time" && field.GetMysqlType() == "timestamp" {
+			goCode += "%s"
+		}
+		if field.FieldGoType == "time.Time" && field.GetMysqlType() == "datetime" {
+			goCode += "%s"
+		}
+		if field.FieldGoType == "time.Time" && field.GetMysqlType() == "int" {
+			goCode += "%d"
+		}
+		if field.FieldGoType == "string" {
+			goCode += "'%s'"
+		}
+
+		if idx != len(sd.Fields)-1 {
+			goCode += ","
+		}
+	}
+	goCode += ");\",\n"
+	for idx, field := range sd.Fields {
+		if field.IsNumber() {
+			goCode += fmt.Sprintf("        this.%s", field.FieldName)
+		}
+		if field.FieldGoType == "time.Time" && field.GetMysqlType() == "timestamp" {
+			goCode += fmt.Sprintf("        this.%s.Format(\"20060102150405\")", field.FieldName)
+		}
+		if field.FieldGoType == "time.Time" && field.GetMysqlType() == "datetime" {
+			goCode += fmt.Sprintf("        this.%s.Format(\"20060102150405\")", field.FieldName)
+		}
+		if field.FieldGoType == "time.Time" && field.GetMysqlType() == "int" {
+			goCode += fmt.Sprintf("        this.%s.Unix()", field.FieldName)
+		}
+		if field.FieldGoType == "string" {
+			goCode += fmt.Sprintf("        this.%s", field.FieldName)
+		}
+
+		if idx != len(sd.Fields)-1 {
+			goCode += ",\n"
+		}
+	}
+
+	goCode += ")\n"
+
+	goCode += "    return\n"
+	goCode += "}\n"
 	return
 }
