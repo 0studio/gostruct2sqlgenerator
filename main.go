@@ -51,6 +51,13 @@ func main() {
 	outputF.WriteString("    \"time\"\n")
 	outputF.WriteString(")\n\n")
 	outputF.WriteString("var ___importTime time.Time\n\n")
+	outputF.WriteString("func bool2int(b bool) int {\n")
+	outputF.WriteString("    if b {\n")
+	outputF.WriteString("        return 1\n")
+	outputF.WriteString("    } else {\n")
+	outputF.WriteString("        return 0\n")
+	outputF.WriteString("    }\n")
+	outputF.WriteString("}\n")
 	for _, sd := range structDescriptionList {
 		outputF.WriteString(sd.GenerateInsert())
 		outputF.WriteString("\n")

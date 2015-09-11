@@ -7,6 +7,7 @@ import (
 )
 
 var DefaultMysqlTypeMap map[string]string = map[string]string{
+	"bool":      "tinyint",
 	"int":       "int",
 	"int8":      "tinyint",
 	"int16":     "smallint",
@@ -22,6 +23,7 @@ var DefaultMysqlTypeMap map[string]string = map[string]string{
 	"time.Time": "timestamp",
 }
 var DefaultMysqlDefaultValueMap map[string]string = map[string]string{
+	"bool":      "0",
 	"int":       "0",
 	"int8":      "0",
 	"int16":     "0",
@@ -62,6 +64,12 @@ func (fd FieldDescriptoin) IsInt() bool {
 	return false
 }
 
+func (fd FieldDescriptoin) IsBool() bool {
+	if fd.FieldGoType == "bool" {
+		return true
+	}
+	return false
+}
 func (fd FieldDescriptoin) IsFloat() bool {
 	if fd.FieldGoType == "flaot32" ||
 		fd.FieldGoType == "flaot64" {
@@ -169,6 +177,10 @@ func (sd StructDescription) GenerateInsert() (goCode string) {
 	}
 	goCode += ") values ("
 	for idx, field := range sd.Fields {
+		if field.IsBool() {
+
+			goCode += "%d"
+		}
 		if field.IsNumber() {
 			goCode += "%d"
 		}
@@ -191,6 +203,10 @@ func (sd StructDescription) GenerateInsert() (goCode string) {
 	}
 	goCode += ");\",\n"
 	for idx, field := range sd.Fields {
+		if field.IsBool() {
+			goCode += fmt.Sprintf("        bool2int(this.%s)", field.FieldName)
+		}
+
 		if field.IsNumber() {
 			goCode += fmt.Sprintf("        this.%s", field.FieldName)
 		}

@@ -11,6 +11,7 @@ type Hello struct {
 	Id   int    `json:"id" mysql:"pk,defalut=1,type=bigint"` // id
 	Name string `mysql:"pk,defalut='hello',name=helloName,type=varchar(10)"`
 	Age  int
+	Sex  bool
 	T    time.Time `mysql:"type=int"`
 	T2   time.Time
 }
