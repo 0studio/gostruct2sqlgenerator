@@ -37,6 +37,9 @@ var DefaultMysqlDefaultValueMap map[string]string = map[string]string{
 	"time.Time": "0",
 }
 
+type Property struct {
+	PackageName string
+}
 type FieldDescriptoin struct {
 	FieldName         string
 	FieldGoType       string
@@ -106,6 +109,10 @@ type StructDescription struct {
 	Fields     []FieldDescriptoin
 }
 
+func (sd *StructDescription) Reset() {
+	sd.StructName = ""
+	sd.Fields = nil
+}
 func (sd StructDescription) GetMysqlTableName() string {
 	return sd.StructName
 }
