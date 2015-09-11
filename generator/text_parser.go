@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"fmt"
 	"io/ioutil"
 	"reflect"
 	"regexp"
@@ -67,7 +66,6 @@ func ParseStructFileContent(content string) (sdList []StructDescription, prop Pr
 			}
 			fd.FieldName = tokens[0]
 			fd.FieldGoType = tokens[1]
-			fmt.Println("fd", fd)
 			sd.Fields = append(sd.Fields, fd)
 		}
 
