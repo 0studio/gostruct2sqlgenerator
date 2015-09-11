@@ -24,7 +24,7 @@ func TestGenerateCreateTableSql(t *testing.T) {
 	createTableSql, err := sd.GenerateCreateTableSql()
 	assert.NoError(t, err)
 	fmt.Println(createTableSql)
-	expectSql := "create table `test`(\n" +
+	expectSql := "create table if not exists `test`(\n" +
 		"`id` bigint NOT NULL DEFAULT 1,\n" +
 		"`name` varchar(100) NOT NULL DEFAULT ''\n" +
 		",primary key (id)\n" +

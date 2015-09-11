@@ -88,7 +88,7 @@ func (sd StructDescription) GenerateCreateTableSql() (sql string, err error) {
 	if len(sd.Fields) == 0 {
 		return "", errors.New("no filed found ,generate create table sql error")
 	}
-	sql += "create table `" + sd.StructName + "`(\n"
+	sql += "create table if not exists `" + sd.StructName + "`(\n"
 	for idx, fieldD := range sd.Fields {
 		sql += "`" + fieldD.GetMysqlFieldName() + "` " + fieldD.GetMysqlType() + " NOT NULL DEFAULT " + fieldD.GetMysqlDefalutValue()
 		if idx != len(sd.Fields)-1 {
