@@ -17,7 +17,7 @@ import (
 
 type Hello struct {
 	Id   int    `json:"id" mysql:"pk,defalut=1,type=bigint"` // id
-	Name string `mysql:"pk,defalut='hello',type=varchar(10)"`
+	Name string `mysql:"pk,defalut='hello',name=helloName,type=varchar(10)"`
 	Age  int
 	T    time.Time `mysql:"type=int"`
 	T2   time.Time
@@ -38,7 +38,7 @@ import (
 var ___importTime time.Time
 
 func (this Hello) GenerateInsert() (sql string) {
-    sql = fmt.Sprintf("insert into `Hello`(Id,Name,Age,T,T2) values (%d,'%s',%d,%d,%s);",
+    sql = fmt.Sprintf("insert into `Hello`(Id,helloName,Age,T,T2) values (%d,'%s',%d,%d,%s);",
         this.Id,
         this.Name,
         this.Age,
@@ -48,7 +48,7 @@ func (this Hello) GenerateInsert() (sql string) {
 }
 
 func (this Hello) GenerateCreate() (sql string) {
-    sql = "create table if not exists `Hello`(`Id` bigint NOT NULL DEFAULT 0,`Name` varchar(10) NOT NULL DEFAULT '',`Age` int NOT NULL DEFAULT 0,`T` int NOT NULL DEFAULT 0,`T2` timestamp NOT NULL DEFAULT 0,primary key (Id,Name));"
+    sql = "create table if not exists `Hello`(`Id` bigint NOT NULL DEFAULT 0,`helloName` varchar(10) NOT NULL DEFAULT '',`Age` int NOT NULL DEFAULT 0,`T` int NOT NULL DEFAULT 0,`T2` timestamp NOT NULL DEFAULT 0,primary key (Id,helloName));"
     return
 }
 
