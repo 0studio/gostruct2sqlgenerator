@@ -138,27 +138,27 @@ func (sd StructDescription) GenerateCreateTableSql() (sql string, err error) {
 	if len(sd.Fields) == 0 {
 		return "", errors.New("no filed found ,generate create table sql error")
 	}
-	sql += "create table if not exists `" + sd.GetMysqlTableName() + "`("
+	sql += "create table if not exists `" + sd.GetMysqlTableName() + "`(\n"
 	for idx, fieldD := range sd.Fields {
 		sql += "`" + fieldD.GetMysqlFieldName() + "` " + fieldD.GetMysqlType() + " NOT NULL DEFAULT " + fieldD.GetMysqlDefalutValue()
 		if idx != len(sd.Fields)-1 {
-			sql += ","
+			sql += ",\n"
 		} else {
-			sql += ""
+			sql += "\n"
 		}
 	}
 	pkList := sd.GetPK()
 	if len(pkList) != 0 {
-		sql += ",primary key (" + strings.Join(pkList, ",") + ")"
+		sql += ",primary key (" + strings.Join(pkList, ",") + ")\n"
 	}
 
 	sql += ");"
 	return
 }
-
 func (sd StructDescription) GenerateCreateTableFunc() (goCode string) {
 	goCode += fmt.Sprintf("func (this %s) GetCreateTableSql() (sql string) {\n", sd.StructName)
 	sql, _ := sd.GenerateCreateTableSql()
+	sql = strings.Replace(sql, "\n", "", -1)
 	goCode += fmt.Sprintf("    sql = \"%s\"\n", sql)
 	goCode += "    return\n"
 	goCode += "}\n"
